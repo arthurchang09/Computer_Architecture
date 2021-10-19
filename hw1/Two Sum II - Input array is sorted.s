@@ -1,31 +1,31 @@
 .data
-arr1:     .word 4,5,8,12 # a[5] = {4,5,8,12}
+arr1:     .word 4,5,8,12 # a[4] = {4,5,8,12}
 len:      .word 16 # 4*4
-target:   .word 16
+target:   .word 12
 comma:    .string ", "
 str:      .string "The answer is "
 str2:     .string "No answer."
 .text
 main:
-    la s0 arr1    #load address of the array
-    lw s2 target
-    lw s3 len
-    add s3,s3,s0    
-    addi t0,s0,0    # i = 0
-    addi t1,s3,-4   # j = len -1
-    jal ra, loop1
+    la a0 arr1    # load address of the array
+    lw a1 target  # load the value of target
+    lw a2 len     # load the value of len
+    add a2,a2,a0  # turn a2 into the end of array 
+    jal ra, func
     
     # Exit Program
     li a7, 10
     ecall
-    
+func: 
+    addi t0,a0,0    # i = 0
+    addi t1,a2,-4   # j = len -1    
 loop1:
     bge t0,t1 No_ans # i < j continue the loop
     lw t2,0(t0)      # load a[i]
     lw t3,0(t1)      # load a[j]
     add t4,t2,t3     # t4 = a[i] + a[j]
-    beq t4,s2 print_ans # if a[i] + a[j] == target, goto print ans
-    blt t4,s2 small
+    beq t4,a1 print_ans # if a[i] + a[j] == target, goto print ans
+    blt t4,a1 small
     addi t1,t1,-4    # j--
     j loop1
 small:
@@ -39,8 +39,8 @@ No_ans:
     ret
 print_ans:
     # transform the address into the number of position in the array
-    sub s4,t0,s0 
-    sub s5,t1,s0 
+    sub s4,t0,a0 
+    sub s5,t1,a0 
     srli s4,s4,2 
     srli s5,s5,2 
     addi s4,s4,1
